@@ -1,60 +1,61 @@
 package com.examenfinal.examen.detalles_ventas.application;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.examenfinal.examen.bicicletas.domain.service.Bicicleta;
 import com.examenfinal.examen.detalles_ventas.domain.entity.DetalleVenta;
 import com.examenfinal.examen.detalles_ventas.domain.service.IServiceDetalleVenta;
-import com.examenfinal.examen.detalles_ventas.infrastructure.RepositoryDetallesVenta;
+import com.examenfinal.examen.detalles_ventas.infrastructure.RepositoryDetalleVenta;
 
 import jakarta.transaction.Transactional;
 
 @Service
-public class ImplementsServiceDetalleVenta implements IServiceDetalleVenta{
+public class ImplementsServiceDetalleVenta implements IServiceDetalleVenta {
 
     @Autowired
-    RepositoryDetallesVenta repositoryDetallesVenta;
+    private RepositoryDetalleVenta repositoryDetalleVenta;
 
     @Override
     @Transactional
-    public DetalleVenta create(DetalleVenta detalleVenta) {
-        return repositoryDetallesVenta.save(detalleVenta);
+    public DetalleVenta createDetalleVenta(DetalleVenta detalleVenta) {
+        return repositoryDetalleVenta.save(detalleVenta);
     }
 
     @Override
     @Transactional
-    public Optional<DetalleVenta> update(Integer id, DetalleVenta product) {
-         Optional<DetalleVenta> BicicletaOptional = repositoryDetallesVenta.findById(id);
+    public Optional<DetalleVenta> update(Integer id, DetalleVenta detalleVenta) {
+        Optional<DetalleVenta> detalleVentaOptional = repositoryDetalleVenta.findById(id);
 
-        if (BicicletaOptional.isPresent()) {
-            
-            DetalleVenta bicicletaDb = BicicletaOptional.orElseThrow();
-            
-            bicicletaDb.setVenta(product.getVenta());
-            bicicletaDb.setBicicleta(product.getBicicleta());
-            bicicletaDb.setCantidad(product.getCantidad());
-            bicicletaDb.setPrecioUnitario(product.getPrecioUnitario());
-    
-            return Optional.of(repositoryDetallesVenta.save(bicicletaDb));
-            
+        if (detalleVentaOptional.isPresent()) {
+            DetalleVenta detalleVentaDb = detalleVentaOptional.get();
+            detalleVentaDb.setCantidad(detalleVenta.getCantidad());
+            detalleVentaDb.setVenta(detalleVenta.getVenta());
+            detalleVentaDb.setBicicleta(detalleVenta.getBicicleta());
+
+            return Optional.of(repositoryDetalleVenta.save(detalleVentaDb));
         }
-        return BicicletaOptional;
+        return detalleVentaOptional;
     }
 
     @Override
+    @Transactional
     public Optional<DetalleVenta> delete(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        Optional<DetalleVenta> detalleVentaOptional = repositoryDetalleVenta.findById(id);
+
+        detalleVentaOptional.ifPresent(repositoryDetalleVenta::delete);
+        return detalleVentaOptional;
     }
 
     @Override
-    public Optional<DetalleVenta> getById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+    public Optional<DetalleVenta> getDetalleVentaById(Integer id) {
+        return repositoryDetalleVenta.findById(id);
     }
 
-
+    @Override
+    public List<DetalleVenta> getAllDetalleVenta() {
+        return repositoryDetalleVenta.findAll();
+    }
 }
